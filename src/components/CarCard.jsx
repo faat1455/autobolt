@@ -1,90 +1,47 @@
 import React from 'react';
+import { Fuel, Gauge, Settings2, Calendar } from 'lucide-react';
+import useWindowSize from '../hooks/useWindowSize';
 
-const CarCard = ({ car }) => {
+const CarCard = ({ car, onDetailsClick }) => {
+  const width = useWindowSize();
+  const isMobile = width < 768;
+
   return (
-    <div style={{
-      backgroundColor: 'white',
-      borderRadius: '25px',
-      overflow: 'hidden',
-      boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-      border: '1px solid #f0f0f0',
-      transition: '0.3s',
-      display: 'flex',
-      flexDirection: 'column'
-    }}>
-      {/* KÉP ÉS BADGE */}
-      <div style={{ position: 'relative', height: '220px', overflow: 'hidden' }}>
-        <div style={{
-          position: 'absolute',
-          top: '15px',
-          left: '15px',
-          zIndex: 10,
-          padding: '5px 12px',
-          borderRadius: '20px',
-          fontSize: '10px',
-          fontWeight: '900',
-          textTransform: 'uppercase',
-          letterSpacing: '1px',
-          backgroundColor: car.status === 'Új autók' ? '#E31E24' : '#1f2937',
-          color: 'white'
-        }}>
-          {car.status === 'Új autók' ? 'Új' : 'Használt'}
-        </div>
-        <img 
-          src={car.img} 
-          style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-          alt={car.make} 
-        />
+    <div style={{ backgroundColor: 'white', borderRadius: '30px', overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.04)', position: 'relative' }}>
+
+      {/* Badge */}
+      <div style={{ position: 'absolute', top: '20px', left: '20px', backgroundColor: car.status === 'Új autók' ? '#E31E24' : '#1f2937', color: 'white', padding: '5px 12px', borderRadius: '10px', fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', zIndex: 2 }}>
+        {car.status === 'Új autók' ? 'ÚJ' : 'HASZNÁLT'}
       </div>
-      
-      {/* TARTALOM */}
-      <div style={{ padding: '25px' }}>
-        <h3 style={{ fontSize: '20px', fontWeight: '900', margin: '0 0 5px 0' }}>
+
+      {/* Kép */}
+      <div style={{ height: isMobile ? '220px' : '280px', cursor: 'pointer' }} onClick={() => onDetailsClick(car)}>
+        <img src={car.img ? car.img.split('|||')[0] : ''} alt={car.make} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+      </div>
+
+      {/* Tartalom */}
+      <div style={{ padding: isMobile ? '20px' : '35px' }}>
+        <h3 style={{ margin: '0 0 8px 0', fontSize: isMobile ? '22px' : '28px', fontWeight: '900', color: '#111827' }}>
           {car.make} - {car.year}
         </h3>
-        <p style={{ fontSize: '11px', color: '#9ca3af', fontWeight: 'bold', margin: '0 0 20px 0' }}>
+        <p style={{ color: '#9ca3af', fontSize: '14px', margin: '0 0 25px 0' }}>
           Prémium minőségű választás az Ön igényeire szabva.
         </p>
-        
-        {/* ADATOK (IKONOKKAL) */}
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          padding: '15px 0', 
-          borderTop: '1px solid #f9fafb', 
-          borderBottom: '1px solid #f9fafb',
-          marginBottom: '20px'
-        }}>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '14px', marginBottom: '4px' }}>🕒</div>
-            <div style={{ fontSize: '10px', fontWeight: '900', color: '#374151' }}>{car.km}</div>
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '14px', marginBottom: '4px' }}>⛽</div>
-            <div style={{ fontSize: '10px', fontWeight: '900', color: '#374151' }}>{car.fuel}</div>
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '14px', marginBottom: '4px' }}>⚙️</div>
-            <div style={{ fontSize: '10px', fontWeight: '900', color: '#374151' }}>{car.gearbox}</div>
-          </div>
+
+        {/* Adatok */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '25px', borderTop: '1px solid #f3f4f6', paddingTop: '20px' }}>
+          <IconBox icon={<Gauge size={16} color="#E31E24" />} label="Kilométer" value={car.km} />
+          <IconBox icon={<Fuel size={16} color="#E31E24" />} label="Üzemanyag" value={car.fuel} />
+          <IconBox icon={<Settings2 size={16} color="#E31E24" />} label="Váltó" value={car.gearbox} />
+          <IconBox icon={<Calendar size={16} color="#E31E24" />} label="Évjárat" value={car.year} />
         </div>
-        
-        {/* ÁR ÉS GOMB */}
+
+        {/* Ár + gomb */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <p style={{ fontSize: '18px', fontWeight: '900', color: '#111827', margin: 0 }}>
-            {car.price.toLocaleString()} Ft
-          </p>
-          <button style={{
-            backgroundColor: '#f3f4f6',
-            border: 'none',
-            padding: '10px 18px',
-            borderRadius: '12px',
-            fontSize: '11px',
-            fontWeight: '900',
-            color: '#4b5563',
-            cursor: 'pointer',
-            transition: '0.2s'
-          }}>
+          <div style={{ fontSize: isMobile ? '22px' : '26px', fontWeight: '900', color: '#111827' }}>
+            {car.price.toLocaleString('de-DE')} Ft
+          </div>
+          <button onClick={() => onDetailsClick(car)} style={{ backgroundColor: '#f3f4f6', border: 'none', padding: '12px 24px', borderRadius: '15px', fontWeight: 'bold', cursor: 'pointer', color: '#6b7280', fontSize: '14px' }}>
             Részletek
           </button>
         </div>
@@ -92,5 +49,17 @@ const CarCard = ({ car }) => {
     </div>
   );
 };
+
+const IconBox = ({ icon, label, value }) => (
+  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+    <div style={{ width: '34px', height: '34px', borderRadius: '10px', backgroundColor: '#fff5f5', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+      {icon}
+    </div>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <span style={{ fontSize: '10px', color: '#9ca3af', fontWeight: 'bold', textTransform: 'uppercase' }}>{label}</span>
+      <span style={{ fontSize: '13px', fontWeight: '800', color: '#111827' }}>{value}</span>
+    </div>
+  </div>
+);
 
 export default CarCard;
