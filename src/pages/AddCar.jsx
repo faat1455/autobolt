@@ -90,7 +90,7 @@ const AddCar = ({ onSave, onCancel }) => {
         </div>
 
         <div style={gridTwo}>
-          <div><label style={labelStyle}>Kilométer</label><input name="km" value={formData.km} onChange={handleChange} style={inputStyle} placeholder="Pl: 120000" required /></div>
+          <div><label style={labelStyle}>Kilométer</label><input name="km" type='number' value={formData.km} onChange={handleChange} style={inputStyle} placeholder="Pl: 120000" required /></div>
           <div><label style={labelStyle}>Üzemanyag</label>
             <select name="fuel" value={formData.fuel} onChange={handleChange} style={inputStyle}>
               <option>Benzin</option><option>Dízel</option><option>Hibrid</option><option>Elektromos</option>
