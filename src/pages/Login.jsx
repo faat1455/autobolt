@@ -1,20 +1,7 @@
 import React, { useState } from 'react';
+import { login, setCookie, getCookie, deleteCookie } from '../api';
 
-// Cookie segédfüggvények
-const setCookie = (name, value, days = 7) => {
-  const expires = new Date();
-  expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
-  document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;SameSite=Strict`;
-};
-
-export const getCookie = (name) => {
-  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
-  return match ? match[2] : null;
-};
-
-export const deleteCookie = (name) => {
-  document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;`;
-};
+export { getCookie, deleteCookie };
 
 const Login = ({ setIsLoginOpen, setIsAdmin }) => {
   const [email, setEmail] = useState('');
@@ -28,19 +15,13 @@ const Login = ({ setIsLoginOpen, setIsAdmin }) => {
     setError('');
 
     try {
-      const res = await fetch('http://localhost:3000/api/users/login', { // ✅ javított URL
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-
-      const data = await res.json();
+      const data = await login(email, password);
 
       if (data.success && data.user.admin === 1) {
         setIsAdmin(true);
         setIsLoginOpen(false);
         setCookie('isAdmin', 'true', 7);
-        setCookie('token', data.token, 7); // ✅ token elmentése is
+        setCookie('token', data.token, 7);
       } else if (data.success && data.user.admin !== 1) {
         setError('Nincs admin jogosultságod!');
       } else {

@@ -1,7 +1,6 @@
 import React from 'react';
 import useResponsiveStyles from '../hooks/useResponsiveStyles';
-
-const API = 'http://192.168.12.102:3000';
+import { uploadImage, deleteImage } from '../api';
 
 const ImageGallery = ({ images, onImagesChange, uploading = false, onUploadingChange = () => {} }) => {
   const { s } = useResponsiveStyles();
@@ -18,13 +17,8 @@ const ImageGallery = ({ images, onImagesChange, uploading = false, onUploadingCh
 
     for (const file of allowed) {
       const preview = URL.createObjectURL(file);
-      const formDataUpload = new FormData();
-      formDataUpload.append('kep', file);
-
       try {
-        const res = await fetch(`${API}/api/upload`, { method: 'POST', body: formDataUpload });
-        const data = await res.json();
-
+        const data = await uploadImage(file);
         if (data.success) {
           onImagesChange([...images, { preview, url: data.url, filename: data.filename }]);
         } else {
@@ -43,7 +37,7 @@ const ImageGallery = ({ images, onImagesChange, uploading = false, onUploadingCh
   const handleDeleteImage = async (index) => {
     const img = images[index];
     try {
-      await fetch(`${API}/api/upload/${img.filename}`, { method: 'DELETE' });
+      await deleteImage(img.filename);
     } catch (err) {
       console.error('Kép törlési hiba:', err);
     }

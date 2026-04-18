@@ -36,10 +36,6 @@ const CarFilter = ({
   const cycleSortOrder = () => setSortOrder(prev => prev === null ? 'asc' : prev === 'asc' ? 'desc' : null);
   const sortLabel = sortOrder === 'asc' ? '↑ Legolcsóbb' : sortOrder === 'desc' ? '↓ Legdrágább' : 'Ár';
 
-  const filteredByStatus = selectedFilter === 'Összes autó' 
-    ? cars 
-    : cars.filter(car => car.status === selectedFilter);
-
   return (
     <div style={{ maxWidth: '1150px', margin: '0 auto 40px auto', backgroundColor: 'white', padding: s('15px', '25px'), borderRadius: s('20px', '25px'), boxShadow: '0 4px 25px rgba(0,0,0,0.03)' }}>
 
@@ -68,7 +64,6 @@ const CarFilter = ({
 
       {/* Keresés + gombok */}
       <div style={{ display: 'flex', gap: s('6px', '8px'), alignItems: 'center', flexWrap: s('wrap', 'nowrap') }}>
-        {/* Keresőmező */}
         <div style={{ flex: 1, minWidth: s('100%', 'auto'), position: 'relative' }}>
           <Search size={16} color="#9ca3af" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)' }} />
           <input
@@ -85,7 +80,6 @@ const CarFilter = ({
           )}
         </div>
 
-        {/* Ár szűrő + Rendezés gombok */}
         <div style={{ display: 'flex', gap: s('6px', '8px'), width: s('100%', 'auto') }}>
           <button onClick={() => setShowPriceFilter(!showPriceFilter)} style={{ flex: s(1, 0), display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: s('12px 12px', '14px 16px'), borderRadius: '12px', border: '1px solid #f0f0f0', backgroundColor: showPriceFilter || (minPrice || maxPrice) ? '#111827' : '#f9fafb', color: showPriceFilter || (minPrice || maxPrice) ? 'white' : '#6b7280', fontWeight: 'bold', cursor: 'pointer', fontSize: s('13px', '14px'), whiteSpace: 'nowrap', transition: 'all 0.2s' }}>
             <SlidersHorizontal size={16} />

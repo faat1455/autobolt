@@ -9,7 +9,7 @@ import AddCar from './pages/AddCar';
 import EditCar from './pages/EditCar';
 import CarDetails from './pages/CarDetails';
 import ImagesPage from './pages/ImagesPage';
-import { getCookie, deleteCookie } from './pages/Login';
+import { getCookie, deleteCookie, getCars, createCar, deleteCar } from './api';
 import useWindowSize from './hooks/useWindowSize';
 
 function App() {
@@ -27,8 +27,7 @@ function App() {
 
   const fetchCars = async () => {
     try {
-      const res = await fetch('http://localhost:3000/api/cars');
-      const data = await res.json();
+      const data = await getCars();
       setCars(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Hiba:', err);
@@ -43,10 +42,10 @@ function App() {
     ? cars.filter(car => selectedFilter === 'Összes autó' ? true : car.status === selectedFilter)
     : [];
 
-  const deleteCar = async (id) => {
+  const handleDeleteCar = async (id) => {
     if (window.confirm('Biztosan törölni szeretnéd ezt az autót?')) {
       try {
-        await fetch(`http://localhost:3000/api/cars/${id}`, { method: 'DELETE' });
+        await deleteCar(id);
         fetchCars();
       } catch (err) {
         console.error('Törlési hiba:', err);
@@ -54,9 +53,20 @@ function App() {
     }
   };
 
+  const handleAddCar = async (newCar) => {
+    try {
+      await createCar(newCar);
+      await fetchCars();
+      navigate('/admin');
+    } catch (err) {
+      console.error('Mentési hiba:', err);
+    }
+  };
+
   const handleLogout = () => {
     setIsAdmin(false);
     deleteCookie('isAdmin');
+    deleteCookie('token');
     navigate('/home');
   };
 
@@ -131,17 +141,15 @@ function App() {
 
       <main style={{ flex: 1 }}>
         <Routes>
-          <Route path="/"     element={<Home {...homeProps} />} />
-          <Route path="/home" element={<Home {...homeProps} />} />
+          <Route path="/"            element={<Home {...homeProps} />} />
+          <Route path="/home"        element={<Home {...homeProps} />} />
           <Route path="/details/:id" element={<CarDetails onBack={() => navigate('/home')} onContact={() => navigate('/contact')} />} />
-          <Route path="/admin" element={isAdmin ? <AdminCars cars={cars} deleteCar={deleteCar} onAddClick={() => navigate('/add-car')} onEditClick={(car) => navigate(`/edit-car/${car.id}`)} /> : <Home {...homeProps} />} />
-          <Route path="/add-car" element={isAdmin
-            ? <AddCar onSave={async (newCar) => { try { await fetch('http://localhost:3000/api/cars', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newCar) }); await fetchCars(); navigate('/admin'); } catch (err) { console.error('Mentési hiba:', err); } }} onCancel={() => navigate('/admin')} />
-            : null} />
+          <Route path="/admin"       element={isAdmin ? <AdminCars cars={cars} deleteCar={handleDeleteCar} onAddClick={() => navigate('/add-car')} onEditClick={(car) => navigate(`/edit-car/${car.id}`)} /> : <Home {...homeProps} />} />
+          <Route path="/add-car"     element={isAdmin ? <AddCar onSave={handleAddCar} onCancel={() => navigate('/admin')} /> : null} />
           <Route path="/edit-car/:id" element={isAdmin ? <EditCar onSave={() => { fetchCars(); navigate('/admin'); }} onCancel={() => navigate('/admin')} /> : null} />
-          <Route path="/imagespage" element={isAdmin ? <ImagesPage /> : <Home {...homeProps} />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/about"   element={<About />} />
+          <Route path="/imagespage"  element={isAdmin ? <ImagesPage /> : <Home {...homeProps} />} />
+          <Route path="/contact"     element={<Contact />} />
+          <Route path="/about"       element={<About />} />
         </Routes>
       </main>
 

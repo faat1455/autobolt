@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Calendar, Gauge, Fuel, Settings2, Zap, Navigation, Package, Weight } from 'lucide-react';
 import useWindowSize from '../hooks/useWindowSize';
+import { getCarById } from '../api';
 
 const SEP = '|||';
 
@@ -19,8 +20,7 @@ const CarDetails = ({ onBack, onContact }) => {
   useEffect(() => {
     const fetchCar = async () => {
       try {
-        const res = await fetch(`http://192.168.12.102:3000/api/cars/${id}`);
-        const data = await res.json();
+        const data = await getCarById(id);
         setCar(data);
       } catch (err) {
         console.error('Hiba az autó betöltésekor:', err);
@@ -95,7 +95,6 @@ const CarDetails = ({ onBack, onContact }) => {
 
         {/* GALÉRIA */}
         <div style={{ flex: 1.5, display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '12px' }}>
-          {/* Miniatűrök - mobilon vízszintes, desktopon függőleges */}
           {images.length > 1 && (
             <div style={{ display: 'flex', flexDirection: isMobile ? 'row' : 'column', gap: '8px', width: isMobile ? '100%' : '80px', flexShrink: 0, justifyContent: 'center', order: isMobile ? 2 : 0 }}>
               {images.map((img, i) => (
@@ -105,7 +104,6 @@ const CarDetails = ({ onBack, onContact }) => {
               ))}
             </div>
           )}
-          {/* Fő kép */}
           <div style={{ flex: 1, position: 'relative' }}>
             <img src={images[activeImg] || ''} alt={car.make} onClick={() => setImgFullscreen(true)}
               style={{ width: '100%', height: isMobile ? '250px' : '450px', objectFit: 'contain', borderRadius: '20px', cursor: 'zoom-in', backgroundColor: '#f3f4f6' }}

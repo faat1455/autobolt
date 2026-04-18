@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-const API = 'http://localhost:3000';
+export const BASE = 'https://nodejs313.dszcbaross.edu.hu';
+import { getImages, deleteImage } from '../api.js';
 
 const ImagesPage = () => {
   const navigate = useNavigate();
 
-  const [images, setImages] = useState([]);   // { url, filename } tömbje
+  const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Törlés modal
@@ -15,12 +15,10 @@ const ImagesPage = () => {
   const [torlesHiba, setTorlesHiba] = useState('');
   const [torlesLoading, setTorlesLoading] = useState(false);
 
-  // Képek lekérése a backendről (uploads mappa)
   const kepekLekerese = async () => {
     try {
-      const res = await fetch(`${API}/api/images`);
-      const data = await res.json();
-      if (data.success) setImages(data.images);
+      const result = await getImages();
+      if (result.success) setImages(result.images);
     } catch (err) {
       console.error('Képek lekérési hiba:', err);
     } finally {
@@ -32,19 +30,17 @@ const ImagesPage = () => {
     kepekLekerese();
   }, []);
 
-  // Kép törlése (szavazás: kepTorlese logika)
   const handleDelete = async () => {
     setTorlesLoading(true);
     try {
-      const res = await fetch(`${API}/api/upload/${torlesFilename}`, { method: 'DELETE' });
-      const data = await res.json();
-      if (data.success) {
+      const result = await deleteImage(torlesFilename);
+      if (result.success) {
         setTorlesHiba('');
         setTorlesOpen(false);
         setTorlesFilename('');
-        kepekLekerese(); // frissítjük a listát
+        kepekLekerese();
       } else {
-        setTorlesHiba(data.message || 'Hiba a törlés során!');
+        setTorlesHiba(result.message || 'Hiba a törlés során!');
       }
     } catch (err) {
       setTorlesHiba('Szerver hiba!');
@@ -82,7 +78,6 @@ const ImagesPage = () => {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '15px' }}>
           {images.map((img) => (
             <div key={img.filename} style={{ backgroundColor: 'white', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 4px 15px rgba(0,0,0,0.05)' }}>
-              {/* Kép (szavazás: http://localhost:3000/uploads/kep_neve) */}
               <img
                 src={img.url}
                 alt={img.filename}
@@ -108,7 +103,7 @@ const ImagesPage = () => {
         </div>
       )}
 
-      {/* TÖRLÉS MODAL (szavazás: Modal komponens logikája) */}
+      {/* TÖRLÉS MODAL */}
       {torlesOpen && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 999, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
           <div style={{ backgroundColor: 'white', borderRadius: '20px', padding: '30px', maxWidth: '420px', width: '100%', boxShadow: '0 20px 50px rgba(0,0,0,0.15)' }}>
@@ -120,9 +115,8 @@ const ImagesPage = () => {
               </div>
             )}
 
-            {/* Előnézet */}
             <img
-              src={`${API}/uploads/${torlesFilename}`}
+              src={`${BASE}/uploads/${torlesFilename}`}
               alt=""
               style={{ width: '100%', height: '160px', objectFit: 'cover', borderRadius: '12px', marginBottom: '15px' }}
             />

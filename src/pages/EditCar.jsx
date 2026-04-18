@@ -3,9 +3,9 @@ import { useParams } from 'react-router-dom';
 import useResponsiveStyles from '../hooks/useResponsiveStyles';
 import EditableRow from '../components/EditableRow';
 import ImageGallery from '../components/ImageGallery';
+import { getCarById, updateCar } from '../api';
 
 const SEP = '|||';
-const API = 'http://192.168.12.102:3000';
 
 const EditCar = ({ onSave }) => {
   const { id } = useParams();
@@ -22,10 +22,8 @@ const EditCar = ({ onSave }) => {
   useEffect(() => {
     const fetchCar = async () => {
       try {
-        const res = await fetch(`${API}/api/cars/${id}`);
-        const data = await res.json();
+        const data = await getCarById(id);
         setFormData(data);
-        // Szerver URL-eket az objektumokká alakítjuk ImageGallery-hez
         setImages(data.img ? data.img.split(SEP).filter(Boolean).map(url => ({
           preview: url,
           url: url,
@@ -45,11 +43,7 @@ const EditCar = ({ onSave }) => {
     const updatedCar = { ...formData, img: newImages.map(img => img.url).join(SEP) };
     setFormData(updatedCar);
     try {
-      await fetch(`${API}/api/cars/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedCar)
-      });
+      await updateCar(id, updatedCar);
     } catch {
       alert('Hiba történt a képek mentésekor!');
     }
@@ -61,11 +55,7 @@ const EditCar = ({ onSave }) => {
     setFormData(updatedCar);
     setSaving(true);
     try {
-      const res = await fetch(`${API}/api/cars/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedCar)
-      });
+      const res = await updateCar(id, updatedCar);
       if (!res.ok) throw new Error();
       setSavedField(name);
       setTimeout(() => setSavedField(null), 2000);
@@ -90,25 +80,24 @@ const EditCar = ({ onSave }) => {
           <p style={{ color: '#9ca3af', fontSize: s('13px', '14px'), margin: 0 }}>A mentés után ezen az oldalon maradsz.</p>
         </div>
 
-        {/* Képek galéria + feltöltés */}
         <div style={{ marginBottom: s('20px', '30px') }}>
           <ImageGallery images={images} onImagesChange={handleImagesChange} uploading={uploading} onUploadingChange={setUploading} />
         </div>
 
-        {/* Szerkeszthető sorok */}
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <EditableRow label="Megnevezés" name="make" {...rowProps} />
-          <EditableRow label="Alcím" name="subtitle" {...rowProps} />
-          <EditableRow label="Vételár" name="price" type="number" {...rowProps} />
-          <EditableRow label="Évjárat" name="year" type="number" {...rowProps} />
-          <EditableRow label="Kilométer" name="km" {...rowProps} />
-          <EditableRow label="Üzemanyag" name="fuel" isSelect options={['Benzin', 'Dízel', 'Hibrid', 'Elektromos']} {...rowProps} />
-          <EditableRow label="Váltó" name="gearbox" isSelect options={['Manuális', 'Automata']} {...rowProps} />
-          <EditableRow label="Csomagtér (L)" name="csomagter" {...rowProps} />
-          <EditableRow label="Tömeg (kg)" name="tomeg" {...rowProps} />
-          <EditableRow label="Hajtás" name="hajtas" isSelect options={['Elsőkerék', 'Hátsókerék', 'Összkerék']} {...rowProps} />
+          <EditableRow label="Megnevezés"      name="make"         {...rowProps} />
+          <EditableRow label="Alcím"            name="subtitle"     {...rowProps} />
+          <EditableRow label="Vételár"          name="price"        type="number" {...rowProps} />
+          <EditableRow label="Évjárat"          name="year"         type="number" {...rowProps} />
+          <EditableRow label="Kilométer"        name="km"           {...rowProps} />
+          <EditableRow label="Üzemanyag"        name="fuel"         isSelect options={['Benzin', 'Dízel', 'Hibrid', 'Elektromos']} {...rowProps} />
+          <EditableRow label="Váltó"            name="gearbox"      isSelect options={['Manuális', 'Automata']} {...rowProps} />
+          <EditableRow label="Státusz"          name="status"       isSelect options={['Új autók', 'Használt autók']} {...rowProps} />
+          <EditableRow label="Csomagtér (L)"   name="csomagter"    {...rowProps} />
+          <EditableRow label="Tömeg (kg)"      name="tomeg"        {...rowProps} />
+          <EditableRow label="Hajtás"           name="hajtas"       isSelect options={['Elsőkerék', 'Hátsókerék', 'Összkerék']} {...rowProps} />
           <EditableRow label="Teljesítmény (LE)" name="teljesitmeny" {...rowProps} />
-          <EditableRow label="Leírás" name="description" multiline {...rowProps} />
+          <EditableRow label="Leírás"           name="description"  multiline {...rowProps} />
         </div>
 
         <div style={{ marginTop: s('24px', '40px'), paddingTop: s('20px', '30px'), borderTop: '2px solid #f3f4f6' }}>
