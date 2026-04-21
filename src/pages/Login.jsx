@@ -33,6 +33,8 @@ const Login = ({ setIsLoginOpen, setIsAdmin }) => {
     setError('');
     try {
       const data = await login(email, password);
+      console.log('Login válasz adatok:', data); // Debug
+      
       if (data.success && data.user.admin === 1) {
         setIsAdmin(true);
         setIsLoggedIn(true);
@@ -45,8 +47,8 @@ const Login = ({ setIsLoginOpen, setIsAdmin }) => {
         setError(data.message || 'Hibás email vagy jelszó!');
       }
     } catch (err) {
-      setError('Nem sikerült csatlakozni a szerverhez!');
-      console.error(err);
+      console.error('Login hiba:', err); // Debug
+      setError('Szerver kapcsolati hiba! Ellenőrizd a konzolt.');
     } finally {
       setLoading(false);
     }

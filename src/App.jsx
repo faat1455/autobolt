@@ -9,7 +9,7 @@ import AddCar from './pages/AddCar';
 import EditCar from './pages/EditCar';
 import CarDetails from './pages/CarDetails';
 import ImagesPage from './pages/ImagesPage';
-import { getCookie, deleteCookie, getCars, createCar, deleteCar } from './api';
+import { getCars, createCar, deleteCar, logout, getMe } from './api';
 import useWindowSize from './hooks/useWindowSize';
 
 function App() {
@@ -19,18 +19,43 @@ function App() {
   const isMobile = width < 768;
 
   const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(() => getCookie('isAdmin') === 'true');
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [loading, setLoading] = useState(true);  // ✅ ÚJ: Inicializálás közben loading
   const [cars, setCars] = useState([]);
   const [selectedFilter, setSelectedFilter] = useState('Összes autó');
   const [filterOpen, setFilterOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
+  // ✅ ÚJ: Oldal betöltéskor check az auth státuszt
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        console.log('Checking auth...');
+        const res = await getMe();
+        console.log('Auth válasz:', res);
+        if (res.success && res.user.admin === 1) {
+          setIsAdmin(true);
+        } else {
+          setIsAdmin(false);
+        }
+      } catch (err) {
+        console.log('Nincs bejelentkezés / Auth hiba:', err);
+        setIsAdmin(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+    checkAuth();
+  }, []);
+
   const fetchCars = async () => {
     try {
+      console.log('Autók letöltése...');
       const data = await getCars();
+      console.log('Autók válasz:', data);
       setCars(Array.isArray(data) ? data : []);
     } catch (err) {
-      console.error('Hiba:', err);
+      console.error('Autók letöltési hiba:', err);
       setCars([]);
     }
   };
@@ -63,11 +88,15 @@ function App() {
     }
   };
 
-  const handleLogout = () => {
-    setIsAdmin(false);
-    deleteCookie('isAdmin');
-    deleteCookie('token');
-    navigate('/home');
+  // ✅ MÓDOSÍTOTT: Logout - backend API hívás
+  const handleLogout = async () => {
+    try {
+      await logout();  // Backend logout
+      setIsAdmin(false);
+      navigate('/home');
+    } catch (err) {
+      console.error('Logout hiba:', err);
+    }
   };
 
   const currentPage = location.pathname.split('/')[1] || 'home';
@@ -92,6 +121,11 @@ function App() {
   };
 
   const footerLinkStyle = { color: '#6c757d', textDecoration: 'none', padding: '0 15px', cursor: 'pointer', background: 'none', border: 'none', fontSize: '15px' };
+
+  // ✅ ÚJ: Loading közben semmi ne jelenjék meg
+  if (loading) {
+    return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>Betöltés...</div>;
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: '#F3F4F6', fontFamily: 'sans-serif' }}>

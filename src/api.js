@@ -2,18 +2,18 @@
 export const BASE = 'https://nodejs313.dszcbaross.edu.hu';
 const API = `${BASE}/api`;
 
-// ─── Segédfüggvény - Lényeges: credentials: 'include' ─────────────────────────
+// ─── Segédfüggvény ─────────────────────────────────────────────────────────
 const req = async (url, options = {}) => {
   const headers = { 'Content-Type': 'application/json', ...options.headers };
   const res = await fetch(url, { 
     ...options, 
     headers,
-    credentials: 'include'  // ✅ LÉNYEGES! Cookie-kat küldd/fogadj
+    credentials: 'include'
   });
   return res;
 };
 
-// ─── Cookie segédfüggvények (nem kötelezőek már httpOnly-val, de megtartva) ────
+// ─── Cookie segédfüggvények ────────────────────────────────────────────────
 export const setCookie = (name, value, days = 7) => {
   const expires = new Date();
   expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
@@ -31,12 +31,16 @@ export const deleteCookie = (name) => {
 
 // ─── Autók ───────────────────────────────────────────────────────────────────
 export const getCars = async () => {
-  const res = await fetch(`${API}/cars`);
+  const res = await fetch(`${API}/cars`, {
+    credentials: 'include'
+  });
   return res.json();
 };
 
 export const getCarById = async (id) => {
-  const res = await fetch(`${API}/cars/${id}`);
+  const res = await fetch(`${API}/cars/${id}`, {
+    credentials: 'include'
+  });
   return res.json();
 };
 
@@ -62,13 +66,14 @@ export const deleteCar = async (id) => {
 };
 
 // ─── Képek ───────────────────────────────────────────────────────────────────
+// ✅ MÓDOSÍTOTT: Csak filename-t küld vissza
 export const uploadImage = async (file) => {
   const formData = new FormData();
   formData.append('kep', file);
   const res = await fetch(`${API}/upload`, { 
     method: 'POST', 
     body: formData,
-    credentials: 'include'  // ✅ FormData-nál is!
+    credentials: 'include'
   });
   return res.json();
 };
@@ -79,41 +84,83 @@ export const deleteImage = async (filename) => {
 };
 
 export const getImages = async () => {
-  const res = await fetch(`${API}/images`);
+  const res = await fetch(`${API}/images`, {
+    credentials: 'include'
+  });
   return res.json();
 };
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
 export const login = async (email, password) => {
-  const res = await fetch(`${API}/users/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',  // ✅ KRITIKUS! Cookie-t erre írja a szerver
-    body: JSON.stringify({ email, password }),
-  });
-  return res.json();
+  try {
+    const res = await fetch(`${API}/users/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ email, password }),
+    });
+    
+    if (!res.ok) {
+      console.error(`HTTP hiba: ${res.status}`, res.statusText);
+    }
+    
+    const data = await res.json();
+    console.log('Login válasz:', data);
+    return data;
+  } catch (error) {
+    console.error('Login fetch hiba:', error);
+    throw error;
+  }
 };
 
-// ✅ ÚJ: Logout függvény
 export const logout = async () => {
-  const res = await req(`${API}/users/logout`, {
-    method: 'POST',
-  });
-  return res.json();
+  try {
+    const res = await req(`${API}/users/logout`, {
+      method: 'POST',
+    });
+    return res.json();
+  } catch (error) {
+    console.error('Logout hiba:', error);
+    throw error;
+  }
+};
+
+export const getMe = async () => {
+  try {
+    const res = await req(`${API}/me`, {
+      method: 'GET',
+    });
+    return res.json();
+  } catch (error) {
+    console.error('getMe hiba:', error);
+    throw error;
+  }
 };
 
 // ─── User ─────────────────────────────────────────────────────────────────────
-export const getMe = async () => {
-  const res = await req(`${API}/me`, {
-    method: 'GET',
-  });
-  return res.json();
-};
-
 export const updateUser = async (id, data) => {
   const res = await req(`${API}/users/${id}`, {
     method: 'PUT',
     body: JSON.stringify(data),
   });
   return res.json();
+};
+
+export const getUser = async (id) => {
+  const res = await req(`${API}/users/${id}`, {
+    method: 'GET',
+  });
+  return res.json();
+};
+
+export const deleteUser = async (id) => {
+  const res = await req(`${API}/users/${id}`, {
+    method: 'DELETE',
+  });
+  return res.json();
+};
+
+// ✅ ÚJ: Helper függvény - filename -> teljes URL
+export const getImageUrl = (filename) => {
+  return `${BASE}/uploads/${filename}`;
 };
