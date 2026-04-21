@@ -1,17 +1,19 @@
 // ─── API konfiguráció ─────────────────────────────────────────────────────────
 export const BASE = 'https://nodejs313.dszcbaross.edu.hu';
-
 const API = `${BASE}/api`;
 
-// ─── Segédfüggvény ────────────────────────────────────────────────────────────
+// ─── Segédfüggvény - Lényeges: credentials: 'include' ─────────────────────────
 const req = async (url, options = {}) => {
-  const token = getCookie('token');
-  const headers = { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}), ...options.headers };
-  const res = await fetch(url, { ...options, headers });
+  const headers = { 'Content-Type': 'application/json', ...options.headers };
+  const res = await fetch(url, { 
+    ...options, 
+    headers,
+    credentials: 'include'  // ✅ LÉNYEGES! Cookie-kat küldd/fogadj
+  });
   return res;
 };
 
-// ─── Cookie segédfüggvények ───────────────────────────────────────────────────
+// ─── Cookie segédfüggvények (nem kötelezőek már httpOnly-val, de megtartva) ────
 export const setCookie = (name, value, days = 7) => {
   const expires = new Date();
   expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
@@ -51,11 +53,11 @@ export const updateCar = async (id, carData) => {
     method: 'PUT',
     body: JSON.stringify(carData),
   });
-  return res;
+  return res.json();
 };
 
 export const deleteCar = async (id) => {
-  const res = await fetch(`${API}/cars/${id}`, { method: 'DELETE' });
+  const res = await req(`${API}/cars/${id}`, { method: 'DELETE' });
   return res.json();
 };
 
@@ -63,12 +65,16 @@ export const deleteCar = async (id) => {
 export const uploadImage = async (file) => {
   const formData = new FormData();
   formData.append('kep', file);
-  const res = await fetch(`${API}/upload`, { method: 'POST', body: formData });
+  const res = await fetch(`${API}/upload`, { 
+    method: 'POST', 
+    body: formData,
+    credentials: 'include'  // ✅ FormData-nál is!
+  });
   return res.json();
 };
 
 export const deleteImage = async (filename) => {
-  const res = await fetch(`${API}/upload/${filename}`, { method: 'DELETE' });
+  const res = await req(`${API}/upload/${filename}`, { method: 'DELETE' });
   return res.json();
 };
 
@@ -82,7 +88,32 @@ export const login = async (email, password) => {
   const res = await fetch(`${API}/users/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',  // ✅ KRITIKUS! Cookie-t erre írja a szerver
     body: JSON.stringify({ email, password }),
+  });
+  return res.json();
+};
+
+// ✅ ÚJ: Logout függvény
+export const logout = async () => {
+  const res = await req(`${API}/users/logout`, {
+    method: 'POST',
+  });
+  return res.json();
+};
+
+// ─── User ─────────────────────────────────────────────────────────────────────
+export const getMe = async () => {
+  const res = await req(`${API}/me`, {
+    method: 'GET',
+  });
+  return res.json();
+};
+
+export const updateUser = async (id, data) => {
+  const res = await req(`${API}/users/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
   });
   return res.json();
 };

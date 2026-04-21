@@ -1,39 +1,108 @@
-import React, { useState } from 'react';
-import { login, setCookie, getCookie, deleteCookie } from '../api';
-
-export { getCookie, deleteCookie };
+import React, { useState, useEffect } from 'react';
+import { login, logout, getMe } from '../api';
 
 const Login = ({ setIsLoginOpen, setIsAdmin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
+
+  // ✅ Oldal betöltésekor: Check ha van token
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await getMe();
+        if (res.success) {
+          setUser(res.user);
+          setIsLoggedIn(true);
+          setIsAdmin(res.user.admin === 1);
+        }
+      } catch (err) {
+        // Nincs bejelentkezve
+        setIsLoggedIn(false);
+      }
+    };
+    checkAuth();
+  }, [setIsAdmin]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
-
     try {
       const data = await login(email, password);
-
       if (data.success && data.user.admin === 1) {
         setIsAdmin(true);
+        setIsLoggedIn(true);
+        setUser(data.user);
         setIsLoginOpen(false);
-        setCookie('isAdmin', 'true', 7);
-        setCookie('token', data.token, 7);
+        // Cookie-t a backend kezeli (httpOnly)
       } else if (data.success && data.user.admin !== 1) {
         setError('Nincs admin jogosultságod!');
       } else {
-        setError('Hibás email vagy jelszó!');
+        setError(data.message || 'Hibás email vagy jelszó!');
       }
     } catch (err) {
       setError('Nem sikerült csatlakozni a szerverhez!');
+      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
+  // ✅ ÚJ: Logout funkció
+  const handleLogout = async () => {
+    try {
+      const data = await logout();
+      if (data.success) {
+        setIsAdmin(false);
+        setIsLoggedIn(false);
+        setUser(null);
+        setEmail('');
+        setPassword('');
+        // Cookie-t a backend kitörli (httpOnly)
+      }
+    } catch (err) {
+      console.error('Logout hiba:', err);
+      setError('Hiba történt a kijelentkezéskor!');
+    }
+  };
+
+  // ✅ Ha már bejelentkezve van, logout gombot mutass
+  if (isLoggedIn && user) {
+    return (
+      <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0, 0, 0, 0.7)', backdropFilter: 'blur(8px)' }}>
+        <div style={{ backgroundColor: 'white', width: '100%', maxWidth: '400px', padding: '40px', borderRadius: '24px', position: 'relative', border: '2px solid #000' }}>
+          <button onClick={() => setIsLoginOpen(false)} style={{ position: 'absolute', top: '20px', right: '20px', border: 'none', background: 'none', fontSize: '20px', cursor: 'pointer', fontWeight: 'bold' }}>✕</button>
+          <h2 style={{ textAlign: 'center', fontWeight: '900', marginBottom: '30px', textTransform: 'uppercase', letterSpacing: '1px' }}>Admin Panel</h2>
+          <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+            <p><strong>Bejelentkezve:</strong> {user.felhasznalonev}</p>
+            <p style={{ fontSize: '12px', color: '#666' }}>{user.email}</p>
+          </div>
+          <button
+            onClick={handleLogout}
+            style={{
+              width: '100%',
+              backgroundColor: '#E31E24',
+              color: 'white',
+              padding: '15px',
+              borderRadius: '12px',
+              border: 'none',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              textTransform: 'uppercase'
+            }}
+          >
+            Kijelentkezés
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ✅ Login form (nem bejelentkezve)
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0, 0, 0, 0.7)', backdropFilter: 'blur(8px)' }}>
       <div style={{ backgroundColor: 'white', width: '100%', maxWidth: '400px', padding: '40px', borderRadius: '24px', position: 'relative', border: '2px solid #000' }}>
