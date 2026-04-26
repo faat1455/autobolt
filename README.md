@@ -28,28 +28,24 @@ Ez az alkalmazás főoldala, ahol a felhasználó kereshet, szűrhet és listáb
 | CarFilter.jsx | JSX | Ez a car filter komponens egy egyszerűen használható szűrőfelület, amely lehetővé teszi, hogy kategória, név és ár alapján gyorsan megtalálják a számukra legmegfelelőbb autót. |
 | CarCard.jsx | JSX | Tartalom |
 
-## Oldalak
 **Contact.html** 
 Ez egy reszponzív kapcsolatfelvételi oldal, amely megjeleníti az elérhetőségi adatokat ikonokkal kiegészítve, és asztali nézetben egy dekoratív autóképet is mutat.
 | Fájlnév | Typus | Leyras |
 |:----------------|:----------------:|----------------:|
 | useWindowSize.js | JavaScript | Ez a hook folyamatosan figyeli az ablak szélességét, és mindig visszaadja az aktuális width értéket. |
 
-## Oldalak
 **About.html** 
 Ez az oldal bemutatja az AutoBolt vállalkozást, rövid leírással és statisztikákkal kiegészítve
 | Fájlnév | Typus | Leyras |
 |:----------------|:----------------:|----------------:|
 | useWindowSize.js | JavaScript | Ez a hook folyamatosan figyeli az ablak szélességét, és mindig visszaadja az aktuális width értéket. |
 
-## Oldalak
 **AdminCars.html** 
 Ez egy admin felület, amely lehetővé teszi az autók listázását, hozzáadását, szerkesztését és törlését, mobilon kártyás, asztali nézetben pedig táblázatos formában megjelenítve.
 | Fájlnév | Typus | Leyras |
 |:----------------|:----------------:|----------------:|
 | useWindowSize.js | JavaScript | Ez a hook folyamatosan figyeli az ablak szélességét, és mindig visszaadja az aktuális width értéket. |
 
-## Oldalak
 **EditCar.html** 
 E egy részletes autószerkesztő oldal, ahol egy adott autó adatai és képei betöltődnek, majd mezőnként szerkeszthetők és azonnal menthetők, miközben a képgaléria is kezelhető és frissíthető.
 | Fájlnév | Typus | Leyras |
@@ -59,7 +55,6 @@ E egy részletes autószerkesztő oldal, ahol egy adott autó adatai és képei 
 | ImageGallery.jsx | JSX| Ez egy képfeltöltő és kezelő komponens, amely lehetővé teszi maximum 4 kép feltöltését, előnézetét, törlését és a fő kép kijelölését. |
 | api.js | JavaScript| Ez egy központi API modul, ami az alkalmazás backendjével való kommunikációt kezeli. |
 
-## Oldalak
 **AddCar.html** 
 Ez egy új autó felvételére szolgáló űrlap, amely kezeli az autó összes adatát és a képfeltöltést, majd az elkészült adatot mentésre továbbítja.
 | Fájlnév | Typus | Leyras |
@@ -67,7 +62,6 @@ Ez egy új autó felvételére szolgáló űrlap, amely kezeli az autó összes 
 | useResponsiveStyles.js | JavaScript | Ez a hook a képernyőméret figyelésével segít egyszerűen kezelni a mobil, tablet és desktop nézetekhez tartozó stílusokat. |
 | api.js | JavaScript| Ez egy központi API modul, ami az alkalmazás backendjével való kommunikációt kezeli. |
 
-## Oldalak
 **CarDetails.html** 
 Ez egy részletes autó adatlap, amely betölti és megjeleníti az adott autó összes információját (képgaléria, műszaki adatok, ár és leírás), valamint támogatja a képek nagyítását és teljes képernyős nézetét is.
 | Fájlnév | Typus | Leyras |
@@ -75,22 +69,39 @@ Ez egy részletes autó adatlap, amely betölti és megjeleníti az adott autó 
 | useWindowSize.js | JavaScript | Ez a hook folyamatosan figyeli az ablak szélességét, és mindig visszaadja az aktuális width értéket. |
 | api.js | JavaScript| Ez egy központi API modul, ami az alkalmazás backendjével való kommunikációt kezeli. |
 
-## Oldalak
 **ImagesPage.html** 
 | Fájlnév | Typus | Leyras |
 |:----------------|:----------------:|----------------:|
 | api.js | JavaScript| Ez egy központi API modul, ami az alkalmazás backendjével való kommunikációt kezeli. |
 
-## Oldalak
 **Login.html** 
 Ez egy admin bejelentkezési felület, amely email és jelszó alapján hitelesíti a felhasználót, kezeli a hibákat és betöltést, majd sikeres admin login esetén belépteti a rendszert.
 | Fájlnév | Typus | Leyras |
 |:----------------|:----------------:|----------------:|
 | api.js | JavaScript| Ez egy központi API modul, ami az alkalmazás backendjével való kommunikációt kezeli. |
 
-## Oldalak
 **CarForm.html** 
 | Fájlnév | Typus | Leyras |
 |:----------------|:----------------:|----------------:|
 | Tartalom | Tartalom | Tartalom |
+
+## Használt eszközök
+- VS Code
+- NPM
+- Postman
+- DrawSQL
+- W3Schools
+- ChatGPT
+- Claude
+- Gemini
+- GitHub
+- PhpMyAdmin
+
+
+
+
+
+
+
+
 
