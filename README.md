@@ -131,7 +131,14 @@ Ez egy admin bejelentkezési felület, amely email és jelszó alapján hiteles�
 | api.js | ![JS](https://img.shields.io/badge/JavaScript-f7df1e?style=flat-square&logo=javascript&logoColor=black) | Ez egy központi API modul, ami az alkalmazás backendjével való kommunikációt kezeli. |
 
 ---
+### Tesztfelhasználók
+<details>
+  <summary>Kattints ide</summary>
 
+  - E-mail: a@a1.com
+  - Jelszó: jelszo123
+</details>
+---
 ## Használt eszközök
 
 - **[VS Code](https://code.visualstudio.com/)**
