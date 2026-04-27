@@ -20,7 +20,7 @@ function App() {
 
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [loading, setLoading] = useState(true);  // ✅ ÚJ: Inicializálás közben loading
+  const [loading, setLoading] = useState(true);  // komponens indulásakor loading
   const [cars, setCars] = useState([]);
   const [selectedFilter, setSelectedFilter] = useState('Összes autó');
   const [filterOpen, setFilterOpen] = useState(false);
@@ -88,7 +88,7 @@ function App() {
     }
   };
 
-  // ✅ MÓDOSÍTOTT: Logout - backend API hívás
+  // Logout - backend API hívás
   const handleLogout = async () => {
     try {
       await logout();  // Backend logout
@@ -122,7 +122,7 @@ function App() {
 
   const footerLinkStyle = { color: '#6c757d', textDecoration: 'none', padding: '0 15px', cursor: 'pointer', background: 'none', border: 'none', fontSize: '15px' };
 
-  // ✅ ÚJ: Loading közben semmi ne jelenjék meg
+  // Loading közben semmi ne jelenjen meg
   if (loading) {
     return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>Betöltés...</div>;
   }
