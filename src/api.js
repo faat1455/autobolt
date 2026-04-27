@@ -66,7 +66,7 @@ export const deleteCar = async (id) => {
 };
 
 // ─── Képek ───────────────────────────────────────────────────────────────────
-// ✅ MÓDOSÍTOTT: Csak filename-t küld vissza
+// Csak filename-t küld vissza
 export const uploadImage = async (file) => {
   const formData = new FormData();
   formData.append('kep', file);
