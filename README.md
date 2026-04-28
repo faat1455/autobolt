@@ -41,6 +41,13 @@ A frontend React alapú webes alkalmazás. Feladata kommunikációs hidat létes
 
 > 🎨 [Figma terv](https://www.figma.com/design/Qh24pMohCtE9X7HuRwwWI7/Untitled?node-id=0-1&t=GNkaKQ2bEdBMwEIU-1)
 
+
+---
+## Mobilbarát reszponzív nézet
+
+<img width="2561" height="1500" alt="Group 4" src="https://github.com/user-attachments/assets/269ca8bb-e930-4e48-9663-6a0b0af47c3c" />
+
+
 ---
 
 ## Oldalak
